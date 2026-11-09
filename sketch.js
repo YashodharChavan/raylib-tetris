@@ -10,7 +10,7 @@ function setup() {
         },
         grid: {
             rows: 30,
-            cols: 15,
+            cols: 10,
             cellSize: 20,
         },
         config: {
@@ -20,7 +20,8 @@ function setup() {
                 0: r.WHITE,
                 1: r.RED
             },
-            nextPiece: selectTetrisPiece()
+            nextPiece: selectTetrisPiece(),
+            previewCellScale: 1.5
         }
     };
 
@@ -28,8 +29,6 @@ function setup() {
     world.screen.height = u.getWindowHeight(world.config, world.grid);
 
     world.gameBoard = u.initializeGameBoard(world.grid);
-
-    // world.gameBoard[0][0] = 1
 
     r.SetTraceLogLevel(r.LOG_NONE);
     r.InitWindow(world.screen.width, world.screen.height, "TETRIS");
@@ -58,19 +57,19 @@ function drawGrid(gameBoard, grid, config) {
 }
 
 function drawNextPieceGrid(grid, config) {
-    const { nextPiece, padding, palette } = config;
+    const { nextPiece, padding, palette, previewCellScale, gap } = config;
     const { cols, cellSize } = grid;
-
-    const startX = 4 * padding + cols * cellSize;
+    const scaledSize = previewCellScale * cellSize;
+    const startX = 2 * padding + cols * cellSize + gap * cols;
     const startY = padding;
 
     for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 3; j++) {
-            const posX = startX + j * cellSize * 1.5;
-            const posY = startY + i * cellSize * 1.5;
+            const posX = startX + j * scaledSize;
+            const posY = startY + i * scaledSize;
             const color = palette[nextPiece[i][j]];
 
-            r.DrawRectangle(posX, posY, cellSize * 1.5, cellSize * 1.5, color);
+            r.DrawRectangle(posX, posY, scaledSize, scaledSize, color);
         }
     }
 }
