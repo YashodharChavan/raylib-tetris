@@ -19,7 +19,8 @@ function setup() {
             palette: {
                 0: r.WHITE,
                 1: r.RED
-            }
+            },
+            nextPiece: selectTetrisPiece()
         }
     };
 
@@ -56,16 +57,35 @@ function drawGrid(gameBoard, grid, config) {
     }
 }
 
+function drawNextPieceGrid(grid, config) {
+    const { nextPiece, padding, palette } = config;
+    const { cols, cellSize } = grid;
+
+    const startX = 4 * padding + cols * cellSize;
+    const startY = padding;
+
+    for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+            const posX = startX + j * cellSize * 1.5;
+            const posY = startY + i * cellSize * 1.5;
+            const color = palette[nextPiece[i][j]];
+
+            r.DrawRectangle(posX, posY, cellSize * 1.5, cellSize * 1.5, color);
+        }
+    }
+}
+
 function draw(world) {
     const { gameBoard, grid, config } = world;
     r.BeginDrawing();
 
     drawGrid(gameBoard, grid, config)
+    drawNextPieceGrid(world.grid, world.config)
 
     r.EndDrawing();
 }
 
-function updateGameBoard(gameBoard) {
+function updateGameBoard(gameBoard, config) {
     const rows = gameBoard.length;
     const cols = gameBoard[0].length;
 
@@ -73,6 +93,7 @@ function updateGameBoard(gameBoard) {
 
     for (let y = rows - 2; y >= 0; y--) {
         for (let x = 0; x < cols; x++) {
+            // BUG: need to make it work like tetris, currently working like sand
             if (gameBoard[y][x] && !gameBoard[y + 1][x]) {
                 gameBoard[y][x] = 0;
                 gameBoard[y + 1][x] = 1;
@@ -82,18 +103,20 @@ function updateGameBoard(gameBoard) {
     }
 
     if (shouldInsertPiece) {
-        insertPiece(gameBoard);
+        insertPiece(gameBoard, config);
     }
 }
 
-function insertPiece(gameBoard) {
+function insertPiece(gameBoard, config) {
     // const rows = gameBoard.length;
     const cols = gameBoard[0].length;
-    const selectedPiece = selectTetrisPiece();
+
+    const selectedPiece = config.nextPiece;
+    config.nextPiece = selectTetrisPiece();
     const pieceWidth = selectedPiece[0].length;
 
     const startCol = Math.floor((cols - pieceWidth) / 2);
-    console.log(cols, startCol)
+
     for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 3; j++) {
             gameBoard[i][startCol + j] = selectedPiece[i][j]
@@ -102,7 +125,8 @@ function insertPiece(gameBoard) {
 }
 
 function update(world) {
-    updateGameBoard(world.gameBoard);
+    // console.log(world.config)
+    updateGameBoard(world.gameBoard, world.config);
 }
 
 function tearDown() {
