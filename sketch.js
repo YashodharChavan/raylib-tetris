@@ -6,6 +6,7 @@ const { getRandomPiece } = require("./pieces")
 function setup() {
     const world = {
         screen: {
+            FPS: 10
         },
         grid: {
             rows: 30,
@@ -26,10 +27,11 @@ function setup() {
     world.screen.height = u.getWindowHeight(world.config, world.grid);
 
     world.gameBoard = u.initializeGameBoard(world.grid);
-
+    
+    world.gameBoard[0][0] = 1
     r.SetTraceLogLevel(r.LOG_NONE);
     r.InitWindow(world.screen.width, world.screen.height, "TETRIS");
-    r.SetTargetFPS(60);
+    r.SetTargetFPS(world.screen.FPS);
 
     return world;
 }
@@ -62,7 +64,23 @@ function draw(world) {
     r.EndDrawing();
 }
 
-function update(world) { }
+function updateGameBoard(gameBoard) {
+    const rows = gameBoard.length;
+    const cols = gameBoard[0].length;
+
+    for (let y = rows - 2; y >= 0; y--) {
+        for (let x = 0; x < cols; x++) {
+            if (gameBoard[y][x] && !gameBoard[y + 1][x]) {
+                gameBoard[y][x] = 0;
+                gameBoard[y + 1][x] = 1;
+            }
+        }
+    }
+}
+
+function update(world) {
+    updateGameBoard(world.gameBoard);
+}
 
 function tearDown() {
     r.CloseWindow();
