@@ -17,7 +17,7 @@ function initializeGameBoard(grid) {
 
     for(let i =0; i<grid.rows; i++) {
         const gameBoardRow = []
-        for(let i =0; i<grid.rows; i++) {
+        for(let j =0; j<grid.cols; j++) {
             gameBoardRow.push(0);
         }
         gameBoard.push(gameBoardRow);

@@ -1,7 +1,7 @@
 const r = require("raylib");
 const u = require("./utils")
 
-const { getRandomPiece } = require("./pieces")
+const { selectTetrisPiece } = require("./pieces")
 
 function setup() {
     const world = {
@@ -27,8 +27,9 @@ function setup() {
     world.screen.height = u.getWindowHeight(world.config, world.grid);
 
     world.gameBoard = u.initializeGameBoard(world.grid);
-    
-    world.gameBoard[0][0] = 1
+
+    // world.gameBoard[0][0] = 1
+
     r.SetTraceLogLevel(r.LOG_NONE);
     r.InitWindow(world.screen.width, world.screen.height, "TETRIS");
     r.SetTargetFPS(world.screen.FPS);
@@ -68,12 +69,34 @@ function updateGameBoard(gameBoard) {
     const rows = gameBoard.length;
     const cols = gameBoard[0].length;
 
+    let shouldInsertPiece = true;
+
     for (let y = rows - 2; y >= 0; y--) {
         for (let x = 0; x < cols; x++) {
             if (gameBoard[y][x] && !gameBoard[y + 1][x]) {
                 gameBoard[y][x] = 0;
                 gameBoard[y + 1][x] = 1;
+                shouldInsertPiece = false;
             }
+        }
+    }
+
+    if (shouldInsertPiece) {
+        insertPiece(gameBoard);
+    }
+}
+
+function insertPiece(gameBoard) {
+    // const rows = gameBoard.length;
+    const cols = gameBoard[0].length;
+    const selectedPiece = selectTetrisPiece();
+    const pieceWidth = selectedPiece[0].length;
+
+    const startCol = Math.floor((cols - pieceWidth) / 2);
+    console.log(cols, startCol)
+    for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+            gameBoard[i][startCol + j] = selectedPiece[i][j]
         }
     }
 }

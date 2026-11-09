@@ -26,12 +26,12 @@ const pieces = [
     ],
 ]
 
-function getRandomPiece() {
+function selectTetrisPiece() {
     const index = Math.floor(Math.random() * pieces.length);
 
     return pieces[index]
 }
 
 module.exports = {
-    getRandomPiece
+    selectTetrisPiece
 }
