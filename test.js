@@ -1,5 +1,5 @@
 let bitmap = [[0, 0, 0], [1, 1, 1], [0, 0, 1]]
-const {getRandomPiece} = require("./pieces")
+const { selectTetrisPiece } = require("./pieces")
 
 function rotateLeft(bitmap) {
     const rotated = [];
@@ -32,9 +32,9 @@ function rotateRight(bitmap) {
 function createArray(row, col) {
     const array = [];
 
-    for(let i =0; i<row; i++) {
+    for (let i = 0; i < row; i++) {
         const row = []
-        for(let j =0; j<col; j++) {
+        for (let j = 0; j < col; j++) {
             row.push(0)
         }
         array.push(row);
@@ -45,19 +45,66 @@ function createArray(row, col) {
 
 const cols = 6;
 const rows = 5
-const grid = createArray(rows, cols);
+const gameBoard = createArray(rows, cols);
+gameBoard[4][1]= 1
+const pieceCenter = {
+    x: 2,
+    y: 2
+}
+const selectedPiece = selectTetrisPiece();
 
-const selectedPiece = getRandomPiece();
+function insertPieceInGrid(gameBoard, selectedPiece) {
+    const startCol = pieceCenter.x - 1;
+    const startRow = pieceCenter.y - 1;
 
-function insertPieceInGrid(grid, selectedPiece) {
-    const startCol = Math.floor(cols / 2) - 1;
-
-    for(let i=0; i<3; i++) {
-        for(let j=0;j<3; j++) {
-            grid[i][startCol + j] = selectedPiece[i][j]
+    for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+            gameBoard[startRow + i][startCol + j] = selectedPiece[i][j]
         }
     }
 }
 
-insertPieceInGrid(grid, selectedPiece)
-console.table(grid)
+insertPieceInGrid(gameBoard, selectedPiece)
+
+function updateGameBoard(gameBoard) {
+    const rows = gameBoard.length;
+    const cols = gameBoard[0].length;
+
+    // for (let y = rows - 2; y >= 0; y--) {
+    //     for (let x = 0; x < cols; x++) {
+    //         if (gameBoard[y][x] && !gameBoard[y + 1][x]) {
+    //             gameBoard[y][x] = 0;
+    //             gameBoard[y + 1][x] = 1;
+    //         }
+    //     }
+    // }
+
+    pieceCenter.x++
+}
+
+// updateGameBoard(gameBoard)
+// console.log("Update 1")
+// console.table(gameBoard)
+// updateGameBoard(gameBoard)
+// console.log("Update 2")
+// console.table(gameBoard)
+// updateGameBoard(gameBoard)
+// console.log("Update 3")
+
+
+
+function canPieceMoveDown(gameBoard, pieceCenter) {
+    let canMoveDown = true;
+
+    if (pieceCenter.y + 2 >= gameBoard.length) return false
+
+    for (let i = 0; i < 3; i++) {
+        if (gameBoard[pieceCenter.y + 1][i] && gameBoard[pieceCenter.y + 2][i]) canMoveDown = false
+    }
+
+    return canMoveDown
+}
+
+console.table(gameBoard)
+console.log(canPieceMoveDown(gameBoard, pieceCenter))
+

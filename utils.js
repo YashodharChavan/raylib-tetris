@@ -7,7 +7,7 @@ function getWindowWidth(config, grid) {
 
 function getWindowHeight(config, grid) {
     const { padding, gap } = config;
-    const {rows, cellSize} = grid;
+    const { rows, cellSize } = grid;
 
     return 2 * padding + rows * (cellSize + gap);
 }
@@ -26,8 +26,16 @@ function initializeGameBoard(grid) {
     return gameBoard;
 }
 
+function initializePieceCenter(grid) {
+    return {
+        x: Math.floor(grid.cols / 2),
+        y: 1
+    }
+}
+
 module.exports = {
     getWindowWidth,
     getWindowHeight,
-    initializeGameBoard
+    initializeGameBoard,
+    initializePieceCenter
 }
