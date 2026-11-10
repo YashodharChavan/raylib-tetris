@@ -32,8 +32,6 @@ function setup() {
     world.gameBoard = u.initializeGameBoard(world.grid);
     world.config.pieceCenter = u.initializePieceCenter(world.grid);
 
-    console.log(world.config.pieceCenter);
-
 
     r.SetTraceLogLevel(r.LOG_NONE);
     r.InitWindow(world.screen.width, world.screen.height, "TETRIS");
@@ -91,58 +89,43 @@ function draw(world) {
 
 function canPieceMoveDown(gameBoard, config) {
     const { pieceCenter } = config;
-    let canMoveDown = true;
 
     if (pieceCenter.y + 2 >= gameBoard.length) return false
 
+    const startCol = pieceCenter.y + 1;
+    const startRow = pieceCenter.x - 1;
+
     for (let i = 0; i < 3; i++) {
-        if (gameBoard[pieceCenter.y + 1][i] && gameBoard[pieceCenter.y + 2][i]) canMoveDown = false
+        if (gameBoard[startCol][startRow + i] && gameBoard[startCol + 1][startRow + i]) {
+            return false
+        }
     }
 
-    return canMoveDown
+    return true;
 }
 
 function updateGameBoard(gameBoard, config) {
     const rows = gameBoard.length;
     const cols = gameBoard[0].length;
 
-    let shouldInsertPiece = true;
 
-    // for (let y = rows - 2; y >= 0; y--) {
-    //     for (let x = 0; x < cols; x++) {
-            // from pieceCenter.x check if all 1s have 0s at down. If yes then only move the pieceCenter.y++. 
-
-            const canPieceMove = canPieceMoveDown(gameBoard, config);
-            if (canPieceMove) {
-                config.pieceCenter.y++;
-                // shouldInsertPiece = false
-            }
-            // if (gameBoard[y][x] && !gameBoard[y + 1][x]) {
-            //     gameBoard[y][x] = 0;
-            //     gameBoard[y + 1][x] = 1;
-            //     shouldInsertPiece = false;
-            // }
-    //     }
-    // }
-
-    if (shouldInsertPiece && !config.shouldStop) {
-        // config.shouldStop = true;
-        insertPiece(gameBoard, config);
+    const canPieceMove = canPieceMoveDown(gameBoard, config);
+    if (canPieceMove) {
+        config.pieceCenter.y++;
     }
+    else {
+        config.pieceCenter = u.initializePieceCenter({ rows, cols })
+        config.nextPiece = selectTetrisPiece();
+    }
+
+    insertPiece(gameBoard, config)
 }
 
 function insertPiece(gameBoard, config) {
-    // const rows = gameBoard.length;
-    // const cols = gameBoard[0].length;
-
     const selectedPiece = config.nextPiece;
-    // config.nextPiece = selectTetrisPiece();
-    // const pieceWidth = selectedPiece[0].length;
 
     const startCol = config.pieceCenter.x - 1;
-    const startRow = config.pieceCenter.y - 1
-
-    console.log(startCol, startRow)
+    const startRow = config.pieceCenter.y - 1;
 
     for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 3; j++) {
