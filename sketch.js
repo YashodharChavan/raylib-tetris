@@ -86,22 +86,29 @@ function draw(world) {
     r.BeginDrawing();
 
     drawGrid(gameBoard, grid, config)
-    drawPieceOnBoard(world.grid, world.config);
+    drawPieceOnBoard(world.grid, world.config, world.gameBoard);
     drawNextPieceGrid(world.grid, world.config)
 
     r.EndDrawing();
 }
 
 function canPieceMoveDown(gameBoard, config) {
-    const { pieceCenter } = config;
+    const lastHighRow = [-1, -1, -1];
+    const { pieceCenter, currPiece } = config;
 
-    if (pieceCenter.y + 2 >= gameBoard.length) return false
+    const startCol = pieceCenter.x - 1;
+    const startRow = pieceCenter.y - 1;
 
-    const startCol = pieceCenter.y + 1;
-    const startRow = pieceCenter.x - 1;
+    if (pieceCenter.y + 2 >= gameBoard.length) return false;
+
+    for (let col = 0; col < 3; col++) {
+        for (let row = 0; row < 3; row++) {
+            if (currPiece[row][col]) lastHighRow[col] = row;
+        }
+    }
 
     for (let i = 0; i < 3; i++) {
-        if (gameBoard[startCol][startRow + i] && gameBoard[startCol + 1][startRow + i]) {
+        if (lastHighRow[i] !== -1 && gameBoard[startRow + lastHighRow[i] + 1][startCol + i]) {
             return false
         }
     }
@@ -119,6 +126,7 @@ function updateGameBoard(gameBoard, config) {
         config.pieceCenter.y++;
     }
     else {
+        insertPieceOnBoard(gameBoard, config)
         config.pieceCenter = u.initializePieceCenter({ rows, cols })
         config.currPiece = config.nextPiece;
         config.nextPiece = selectTetrisPiece();
@@ -140,18 +148,24 @@ function insertPieceOnBoard(gameBoard, config) {
     }
 }
 
-function drawPieceOnBoard(grid, config) {
+function drawPieceOnBoard(grid, config, gameBoard) {
     const { padding, gap, palette, pieceCenter, currPiece } = config;
     const { cellSize } = grid;
 
     const startRow = pieceCenter.y - 1;
     const startCol = pieceCenter.x - 1;
+
     for (let y = 0; y < 3; y++) {
         for (let x = 0; x < 3; x++) {
-
             const posX = padding + (startCol + x) * (cellSize + gap);
             const posY = padding + (startRow + y) * (cellSize + gap);
-            const color = palette[currPiece[y][x]];
+
+            const gameBoardColor = gameBoard[startRow + y][startCol + x]
+            const currPieceColor = currPiece[y][x]
+
+            const colorIdx = gameBoardColor ? gameBoardColor : currPieceColor;
+
+            const color = palette[colorIdx]
 
             r.DrawRectangle(posX, posY, cellSize, cellSize, color);
         }
@@ -172,9 +186,8 @@ function handlePieceTranslation(gameBoard, config) {
 }
 
 function update(world) {
-    // updateGameBoard(world.gameBoard, world.config);
-    // insertPieceOnBoard(world.gameBoard, world.config);
-    // handlePieceTranslation(world.gameBoard, world.config);
+    updateGameBoard(world.gameBoard, world.config);
+    handlePieceTranslation(world.gameBoard, world.config);
 }
 
 function tearDown() {

@@ -94,27 +94,33 @@ function updateGameBoard(gameBoard) {
 
 
 function canPieceMoveDown(gameBoard, pieceCenter) {
-    let canMoveDown = {
-        canMove: true,
-        blockedColumns: [false, false, false]
-    };
+    const lastHighRow = [-1, -1, -1];
 
-    if (pieceCenter.y + 2 >= gameBoard.length) return canMoveDown;
-
-    const startRow = pieceCenter.y + 1;
     const startCol = pieceCenter.x - 1;
+    const startRow = pieceCenter.y - 1;
+
+    let canPieceMove = true;
+
+    for (let col = 0; col < 3; col++) {
+        for (let row = 0; row < 3; row++) {
+            if (selectedPiece[row][col]) lastHighRow[col] = row;
+        }
+    }   
 
     for(let i=0; i<3; i++) {
-        for(let j=0; j<3; j++) {
-            if(canMoveDown.blockedColumns[j]) continue;
-
-            
+        if(gameBoard[startRow + lastHighRow[i]+1][startCol + i]) {
+            canPieceMove = false
         }
     }
 
-    return canMoveDown
+    console.log(lastHighRow)
+
+    return canPieceMove;
 }
 
+
 console.table(gameBoard)
+console.log(canPieceMoveDown(gameBoard, pieceCenter))
+
 // console.log(canPieceMoveDown(gameBoard, pieceCenter))
 
