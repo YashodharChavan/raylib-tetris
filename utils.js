@@ -94,10 +94,10 @@ function rotateRight(bitmap) {
 function copyArray(array) {
     const copy = [];
 
-    for(let i=0; i<array.length; i++) {
+    for (let i = 0; i < array.length; i++) {
         const copyRow = [];
 
-        for(let j=0; j<array[0].length; j++) {
+        for (let j = 0; j < array[0].length; j++) {
             copyRow.push(array[i][j])
         }
         copy.push(copyRow)
@@ -108,25 +108,31 @@ function copyArray(array) {
 
 function resetGameBoardRow(gameBoard, row) {
     const cols = gameBoard[0].length;
-    // const resetedGameBoard = copyArray(gameBoard);
 
-    for(let i=0; i<cols; i++) {
+    for (let i = 0; i < cols; i++) {
         gameBoard[row][i] = 0;
     }
-    // return resetGameBoardRow;
 }
 
 function shouldClearRow(gameBoard, row) {
     const cols = gameBoard[0].length;
 
-    for(let i=0; i<cols; i++) {
-        if(!gameBoard[row][i]) return false;
+    for (let i = 0; i < cols; i++) {
+        if (!gameBoard[row][i]) return false;
     }
 
     return true;
 }
 
+function moveCellsDown(gameBoard, row) {
+    const cols = gameBoard[0].length;
 
+    for (let y = row; y >= 1; y--) {
+        for (let x = 0; x < cols; x++) {
+            gameBoard[y][x] = gameBoard[y-1][x]
+        }
+    }
+}
 
 module.exports = {
     getWindowWidth,
@@ -137,4 +143,5 @@ module.exports = {
     rotateRight,
     resetGameBoardRow,
     shouldClearRow,
+    moveCellsDown
 }

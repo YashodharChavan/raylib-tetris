@@ -165,7 +165,7 @@ function drawPieceOnBoard(config, gameBoard) {
 }
 
 function handlePieceTranslation(gameBoard, config) {
-    const { pieceCenter, currPiece} = config;
+    const { pieceCenter, currPiece } = config;
     const isLeftKeyDown = r.IsKeyDown(r.KEY_LEFT)
     const isRightKeyDown = r.IsKeyDown(r.KEY_RIGHT)
 
@@ -180,20 +180,34 @@ function handlePieceTranslation(gameBoard, config) {
     if (isRightKeyDown) pieceCenter.x++;
 }
 
-function handlePieceRotation(config) {
-    if (r.IsKeyDown(r.KEY_UP)) {   
-        config.currPiece = u.rotateRight(config.currPiece);
-    }
+function handlePieceRotation(gameBoard, config) {
+    if (!r.IsKeyDown(r.KEY_UP)) return;
+
+    const { currPiece, pieceCenter } = config;
+
+    const cols = gameBoard[0].length;
+    const startCol = pieceCenter.x - 1
+
+    const rotatedPiece = u.rotateRight(currPiece);
+    const rotatedCols = rotatedPiece[0].length;
+
+    const isWithinRightBoundary =
+        startCol + rotatedCols <= cols;
+
+    if (!isWithinRightBoundary) return;
+
+    config.currPiece = rotatedPiece;
 }
 
 function handleRowClearance(gameBoard) {
     const rows = gameBoard.length;
     const cols = gameBoard[0].length;
 
-    for(let y=0; y<rows; y++) {
-        for(let x=0; x<cols; x++) {
-            if(u.shouldClearRow(gameBoard, y)) {
+    for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) {
+            if (u.shouldClearRow(gameBoard, y)) {
                 u.resetGameBoardRow(gameBoard, y);
+                u.moveCellsDown(gameBoard, y);
             }
         }
     }
@@ -204,8 +218,8 @@ function update(world) {
 
     updateGameBoard(gameBoard, config);
     handlePieceTranslation(gameBoard, config);
-    handlePieceRotation(config);
-    handleRowClearance(gameBoard)
+    handlePieceRotation(gameBoard, config);
+    handleRowClearance(gameBoard);
 }
 
 function tearDown() {

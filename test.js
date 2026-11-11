@@ -120,5 +120,5 @@ function shouldClearRow(row) {
 console.table(gameBoard)
 resetGameBoardRow(1)
 // console.table(gameBoard)
-console.log(shouldClearRow(2))
+console.log(shouldClearRow(4))
 
