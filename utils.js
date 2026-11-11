@@ -33,9 +33,61 @@ function initializePieceCenter(grid) {
     }
 }
 
+function getLowestOccupiedCellRows(config) {
+    const { currPiece } = config;
+    const lowestCellRows = [-1, -1, -1];
+
+
+    for (let col = 0; col < 3; col++) {
+        for (let row = 0; row < 3; row++) {
+            if (currPiece[row][col]) lowestCellRows[col] = row;
+        }
+    }
+
+    return lowestCellRows;
+}
+
+function canPieceMoveDown(gameBoard, config) {
+    const { pieceCenter } = config;
+
+    if (pieceCenter.y + 2 >= gameBoard.length) return false;
+
+    const startCol = pieceCenter.x - 1;
+    const startRow = pieceCenter.y - 1;
+    const lowestCellRows = getLowestOccupiedCellRows(config);
+
+    for (let idx = 0; idx < 3; idx++) {
+        const targetRow = startRow + lowestCellRows[idx] + 1;
+        const targetCol = startCol + idx;
+
+        if (lowestCellRows[idx] !== -1 && gameBoard[targetRow][targetCol]) {
+            return false
+        }
+    }
+
+    return true;
+}
+
+
+function rotateRight(bitmap) {
+    const rotated = []
+
+    for (let row = 0; row < 3; row++) {
+        const rotatedRow = []
+        for (let col = 0; col < 3; col++) {
+            rotatedRow[col] = bitmap[col][2 - row]
+        }
+        rotated.push(rotatedRow)
+    }
+
+    return rotated;
+}
+
 module.exports = {
     getWindowWidth,
     getWindowHeight,
     initializeGameBoard,
-    initializePieceCenter
+    initializePieceCenter,
+    canPieceMoveDown,
+    rotateRight,
 }

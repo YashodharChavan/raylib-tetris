@@ -102,46 +102,11 @@ function draw(world) {
     r.EndDrawing();
 }
 
-function getLowestOccupiedCellRows(config) {
-    const { currPiece } = config;
-    const lowestCellRows = [-1, -1, -1];
-
-
-    for (let col = 0; col < 3; col++) {
-        for (let row = 0; row < 3; row++) {
-            if (currPiece[row][col]) lowestCellRows[col] = row;
-        }
-    }
-
-    return lowestCellRows;
-}
-
-function canPieceMoveDown(gameBoard, config) {
-    const { pieceCenter } = config;
-
-    if (pieceCenter.y + 2 >= gameBoard.length) return false;
-
-    const startCol = pieceCenter.x - 1;
-    const startRow = pieceCenter.y - 1;
-    const lowestCellRows = getLowestOccupiedCellRows(config);
-
-    for (let idx = 0; idx < 3; idx++) {
-        const targetRow = startRow + lowestCellRows[idx] + 1;
-        const targetCol = startCol + idx;
-
-        if (lowestCellRows[idx] !== -1 && gameBoard[targetRow][targetCol]) {
-            return false
-        }
-    }
-
-    return true;
-}
-
 function updateGameBoard(gameBoard, config) {
     const rows = gameBoard.length;
     const cols = gameBoard[0].length;
 
-    const canPieceMove = canPieceMoveDown(gameBoard, config);
+    const canPieceMove = u.canPieceMoveDown(gameBoard, config);
 
     if (canPieceMove) {
         config.pieceCenter.y++;
@@ -200,16 +165,23 @@ function handlePieceTranslation(gameBoard, config) {
 
     const isOutOfLeftBounds = (pieceCenter.x <= 1 && isLeftKeyDown)
     const isOutOfRightBounds = (pieceCenter.x + 2 >= gameBoard[0].length && isRightKeyDown)
-    
+
     if (isOutOfLeftBounds || isOutOfRightBounds) return;
 
     if (isLeftKeyDown) pieceCenter.x--;
     if (isRightKeyDown) pieceCenter.x++;
 }
 
+function handlePieceRotation(config) {
+    if(!r.IsKeyDown(r.KEY_UP)) return;
+
+    config.currPiece = u.rotateRight(config.currPiece);
+}
+
 function update(world) {
     updateGameBoard(world.gameBoard, world.config);
     handlePieceTranslation(world.gameBoard, world.config);
+    handlePieceRotation(world.config);
 }
 
 function tearDown() {
