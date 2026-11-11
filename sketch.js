@@ -18,11 +18,13 @@ function setup() {
             cellSize: 20,
             palette: {
                 0: r.WHITE,
-                1: r.RED,
+                1: r.MAROON,
                 2: r.VIOLET,
                 3: r.GREEN,
                 4: r.ORANGE,
-                5: r.BLUE
+                5: r.BLUE,
+                6: r.GOLD,
+                7: r.BROWN
             },
             currPiece: selectTetrisPiece(),
             nextPiece: selectTetrisPiece(),
@@ -73,15 +75,15 @@ function displayGameOverScreen(screen, config) {
     r.DrawRectangle(
         0, 0,
         width, height,
-        r.ColorAlpha(r.GRAY, 0.75)
+        r.ColorAlpha(r.BLACK, 0.75)
     );
 
-    u.drawCenteredText("GAME", width, height / 2 - 100, fontSize, r.RED);
-    u.drawCenteredText("OVER!!", width, height / 2 - 30, fontSize, r.RED);
-    u.drawCenteredText("Score: " + score, width, height / 2 + 50, 40, r.BLACK);
+    u.drawCenteredText("GAME", width, height / 2 - 100, fontSize, r.MAROON);
+    u.drawCenteredText("OVER!!", width, height / 2 - 30, fontSize, r.MAROON);
+    u.drawCenteredText("Score: " + score, width, height / 2 + 50, 40, r.WHITE);
 }
 
-function drawGridCell(gameBoard, config, x, y) {
+function drawGameBoardCell(gameBoard, config, x, y) {
     const { padding, cellSize, gap, palette } = config;
 
     const posX = padding + x * (cellSize + gap);
@@ -91,13 +93,13 @@ function drawGridCell(gameBoard, config, x, y) {
     r.DrawRectangle(posX, posY, cellSize, cellSize, color);
 }
 
-function drawGrid(gameBoard, config) {
+function drawGameBoard(gameBoard, config) {
     const rows = gameBoard.length;
     const cols = gameBoard[0].length;
 
     for (let y = 0; y < rows; y++) {
         for (let x = 0; x < cols; x++) {
-            drawGridCell(gameBoard, config, x, y);
+            drawGameBoardCell(gameBoard, config, x, y);
         }
     }
 }
@@ -107,12 +109,18 @@ function drawNextPieceGrid(grid, config) {
     const { cols } = grid;
 
     const scaledSize = previewCellScale * cellSize;
+    const pieceWidth = nextPiece[0].length;
 
-    const startX = 2 * padding + cols * (cellSize + gap);
+    const previewAreaWidth = 4 * scaledSize + 3 * gap;
+    const requiredWidth = pieceWidth * scaledSize + (pieceWidth - 1) * gap;
+
+
+    const startX = 2 * padding + cols * (cellSize + gap)
+        + (previewAreaWidth - requiredWidth) / 2;
     const startY = padding;
 
     for (let y = 0; y < 2; y++) {
-        for (let x = 0; x < 3; x++) {
+        for (let x = 0; x < nextPiece[0].length; x++) {
             const posX = startX + x * (scaledSize + gap);
             const posY = startY + y * (scaledSize + gap);
 
@@ -128,7 +136,7 @@ function draw(world) {
     r.BeginDrawing();
     r.ClearBackground(r.BLACK);
 
-    drawGrid(gameBoard, config)
+    drawGameBoard(gameBoard, config)
     drawNextPieceGrid(grid, config)
 
     drawPieceOnBoard(config, gameBoard);

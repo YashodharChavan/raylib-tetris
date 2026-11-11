@@ -4,7 +4,7 @@ function getWindowWidth(config, grid) {
     const { padding, gap, previewCellScale, cellSize } = config;
     const { cols } = grid
 
-    return 3 * padding + cols * (cellSize + gap) + previewCellScale * cellSize * 3;
+    return 3 * padding + cols * (cellSize + gap) + previewCellScale * cellSize * 4;
 }
 
 function getWindowHeight(config, grid) {
