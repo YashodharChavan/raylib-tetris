@@ -6,7 +6,7 @@ const { selectTetrisPiece } = require("./pieces")
 function setup() {
     const world = {
         screen: {
-            FPS: 10
+            FPS: 30
         },
         grid: {
             rows: 30,
@@ -18,8 +18,13 @@ function setup() {
             gap: 1,
             palette: {
                 0: r.WHITE,
-                1: r.RED
+                1: r.RED,
+                2: r.VIOLET,
+                3: r.GREEN,
+                4: r.ORANGE,
+                5: r.BLUE
             },
+            currPiece: selectTetrisPiece(),
             nextPiece: selectTetrisPiece(),
             previewCellScale: 1.5,
             shouldStop: false,
@@ -115,6 +120,7 @@ function updateGameBoard(gameBoard, config) {
     }
     else {
         config.pieceCenter = u.initializePieceCenter({ rows, cols })
+        config.currPiece = config.nextPiece;
         config.nextPiece = selectTetrisPiece();
     }
 
@@ -122,7 +128,7 @@ function updateGameBoard(gameBoard, config) {
 }
 
 function insertPiece(gameBoard, config) {
-    const selectedPiece = config.nextPiece;
+    const selectedPiece = config.currPiece;
 
     const startCol = config.pieceCenter.x - 1;
     const startRow = config.pieceCenter.y - 1;
