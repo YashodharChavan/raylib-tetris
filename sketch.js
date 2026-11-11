@@ -86,6 +86,7 @@ function draw(world) {
     r.BeginDrawing();
 
     drawGrid(gameBoard, grid, config)
+    drawPieceOnBoard(world.grid, world.config);
     drawNextPieceGrid(world.grid, world.config)
 
     r.EndDrawing();
@@ -139,6 +140,24 @@ function insertPieceOnBoard(gameBoard, config) {
     }
 }
 
+function drawPieceOnBoard(grid, config) {
+    const { padding, gap, palette, pieceCenter, currPiece } = config;
+    const { cellSize } = grid;
+
+    const startRow = pieceCenter.y - 1;
+    const startCol = pieceCenter.x - 1;
+    for (let y = 0; y < 3; y++) {
+        for (let x = 0; x < 3; x++) {
+
+            const posX = padding + (startCol + x) * (cellSize + gap);
+            const posY = padding + (startRow + y) * (cellSize + gap);
+            const color = palette[currPiece[y][x]];
+
+            r.DrawRectangle(posX, posY, cellSize, cellSize, color);
+        }
+    }
+}
+
 function handlePieceTranslation(gameBoard, config) {
     const { pieceCenter } = config;
     const isLeftKeyDown = r.IsKeyDown(r.KEY_LEFT)
@@ -153,9 +172,9 @@ function handlePieceTranslation(gameBoard, config) {
 }
 
 function update(world) {
-    updateGameBoard(world.gameBoard, world.config);
-    insertPieceOnBoard(world.gameBoard, world.config);
-    handlePieceTranslation(world.gameBoard, world.config);
+    // updateGameBoard(world.gameBoard, world.config);
+    // insertPieceOnBoard(world.gameBoard, world.config);
+    // handlePieceTranslation(world.gameBoard, world.config);
 }
 
 function tearDown() {
