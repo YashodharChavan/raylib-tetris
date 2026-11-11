@@ -129,6 +129,7 @@ function insertPiece(gameBoard, config) {
 
     for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 3; j++) {
+            if (i > 1 && !selectedPiece[i][j]) continue;
             gameBoard[startRow + i][startCol + j] = selectedPiece[i][j]
         }
     }

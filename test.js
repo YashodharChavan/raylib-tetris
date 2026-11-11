@@ -46,7 +46,7 @@ function createArray(row, col) {
 const cols = 6;
 const rows = 5
 const gameBoard = createArray(rows, cols);
-gameBoard[4][1]= 1
+gameBoard[4][1] = 1
 const pieceCenter = {
     x: 2,
     y: 2
@@ -94,17 +94,27 @@ function updateGameBoard(gameBoard) {
 
 
 function canPieceMoveDown(gameBoard, pieceCenter) {
-    let canMoveDown = true;
+    let canMoveDown = {
+        canMove: true,
+        blockedColumns: [false, false, false]
+    };
 
-    if (pieceCenter.y + 2 >= gameBoard.length) return false
+    if (pieceCenter.y + 2 >= gameBoard.length) return canMoveDown;
 
-    for (let i = 0; i < 3; i++) {
-        if (gameBoard[pieceCenter.y + 1][i] && gameBoard[pieceCenter.y + 2][i]) canMoveDown = false
+    const startRow = pieceCenter.y + 1;
+    const startCol = pieceCenter.x - 1;
+
+    for(let i=0; i<3; i++) {
+        for(let j=0; j<3; j++) {
+            if(canMoveDown.blockedColumns[j]) continue;
+
+            
+        }
     }
 
     return canMoveDown
 }
 
 console.table(gameBoard)
-console.log(canPieceMoveDown(gameBoard, pieceCenter))
+// console.log(canPieceMoveDown(gameBoard, pieceCenter))
 
