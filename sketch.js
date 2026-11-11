@@ -6,11 +6,11 @@ const { selectTetrisPiece } = require("./pieces")
 function setup() {
     const world = {
         screen: {
-            FPS: 10
+            FPS: 30
         },
         grid: {
             rows: 30,
-            cols: 6,
+            cols: 10,
         },
         config: {
             padding: 10,
@@ -27,6 +27,8 @@ function setup() {
             currPiece: selectTetrisPiece(),
             nextPiece: selectTetrisPiece(),
             previewCellScale: 1.5,
+            score: 0,
+            isGameOver: false
         }
     };
 
@@ -46,6 +48,37 @@ function setup() {
 
 function isRunning() {
     return !r.WindowShouldClose();
+}
+
+function displayScore(grid, config) {
+    const { cols } = grid;
+    const { padding, cellSize, previewCellScale, score } = config;
+
+    const scoreText = String(score).padStart(4, 0)
+    const fontSize = 40;
+
+    const posX = 2 * padding + cols * cellSize + 10;
+    const posY = 2 * padding + 2 * previewCellScale * cellSize;
+
+    r.DrawText(scoreText, posX, posY, fontSize, r.GREEN);
+}
+
+function displayGameOverScreen(screen, config) {
+    if (!config.isGameOver) return;
+
+    const { width, height } = screen;
+    const { score } = config;
+    const fontSize = 75;
+
+    r.DrawRectangle(
+        0, 0,
+        width, height,
+        r.ColorAlpha(r.GRAY, 0.75)
+    );
+
+    u.drawCenteredText("GAME", width, height / 2 - 100, fontSize, r.RED);
+    u.drawCenteredText("OVER!!", width, height / 2 - 30, fontSize, r.RED);
+    u.drawCenteredText("Score: " + score, width, height / 2 + 50, 40, r.BLACK);
 }
 
 function drawGridCell(gameBoard, config, x, y) {
@@ -91,13 +124,17 @@ function drawNextPieceGrid(grid, config) {
 }
 
 function draw(world) {
-    const { gameBoard, grid, config } = world;
+    const { screen, gameBoard, grid, config } = world;
     r.BeginDrawing();
+    r.ClearBackground(r.BLACK);
 
     drawGrid(gameBoard, config)
     drawNextPieceGrid(grid, config)
 
     drawPieceOnBoard(config, gameBoard);
+
+    displayScore(grid, config);
+    displayGameOverScreen(screen, config)
 
     r.EndDrawing();
 }
@@ -112,6 +149,7 @@ function updateGameBoard(gameBoard, config) {
         config.pieceCenter.y++;
     }
     else {
+        config.score++;
         insertPieceOnBoard(gameBoard, config)
         config.pieceCenter = u.initializePieceCenter({ rows, cols })
         config.currPiece = config.nextPiece;
@@ -140,7 +178,9 @@ function insertPieceOnBoard(gameBoard, config) {
 }
 
 function drawPieceOnBoard(config, gameBoard) {
-    const { padding, gap, palette, pieceCenter, currPiece, cellSize } = config;
+    const { padding, gap, palette, pieceCenter, currPiece, cellSize, isGameOver } = config;
+
+    if (isGameOver) return;
 
     const startRow = pieceCenter.y - 1;
     const startCol = pieceCenter.x - 1;
@@ -215,6 +255,12 @@ function handleRowClearance(gameBoard) {
 
 function update(world) {
     const { gameBoard, config } = world;
+
+    if (config.isGameOver) return;
+
+    if (u.checkGameOver(gameBoard)) {
+        config.isGameOver = true;
+    }
 
     updateGameBoard(gameBoard, config);
     handlePieceTranslation(gameBoard, config);

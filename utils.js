@@ -1,3 +1,5 @@
+const r = require("raylib")
+
 function getWindowWidth(config, grid) {
     const { padding, gap, previewCellScale, cellSize } = config;
     const { cols } = grid
@@ -91,21 +93,6 @@ function rotateRight(bitmap) {
     return rotated;
 }
 
-function copyArray(array) {
-    const copy = [];
-
-    for (let i = 0; i < array.length; i++) {
-        const copyRow = [];
-
-        for (let j = 0; j < array[0].length; j++) {
-            copyRow.push(array[i][j])
-        }
-        copy.push(copyRow)
-    }
-
-    return copy
-}
-
 function resetGameBoardRow(gameBoard, row) {
     const cols = gameBoard[0].length;
 
@@ -129,10 +116,28 @@ function moveCellsDown(gameBoard, row) {
 
     for (let y = row; y >= 1; y--) {
         for (let x = 0; x < cols; x++) {
-            gameBoard[y][x] = gameBoard[y-1][x]
+            gameBoard[y][x] = gameBoard[y - 1][x]
         }
     }
 }
+
+function drawCenteredText(text, screenWidth, y, fontSize, color) {
+    const textWidth = r.MeasureText(text, fontSize);
+    const x = (screenWidth - textWidth) / 2;
+
+    r.DrawText(text, x, y, fontSize, color);
+}
+
+function checkGameOver(gameBoard) {
+    const cols = gameBoard[0].length;
+
+    for(let i=0; i<cols; i++) {
+        if(gameBoard[0][i]) return true;
+    }
+    
+    return false;
+}
+
 
 module.exports = {
     getWindowWidth,
@@ -143,5 +148,7 @@ module.exports = {
     rotateRight,
     resetGameBoardRow,
     shouldClearRow,
-    moveCellsDown
+    moveCellsDown,
+    drawCenteredText,
+    checkGameOver
 }
