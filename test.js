@@ -46,7 +46,14 @@ function createArray(row, col) {
 const cols = 6;
 const rows = 5
 const gameBoard = createArray(rows, cols);
+
+gameBoard[4][0] = 1
 gameBoard[4][1] = 1
+gameBoard[4][2] = 1
+gameBoard[4][3] = 1
+gameBoard[4][4] = 1
+gameBoard[4][5] = 1
+
 const pieceCenter = {
     x: 2,
     y: 2
@@ -57,41 +64,14 @@ function insertPieceInGrid(gameBoard, selectedPiece) {
     const startCol = pieceCenter.x - 1;
     const startRow = pieceCenter.y - 1;
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 2; i++) {
         for (let j = 0; j < 3; j++) {
             gameBoard[startRow + i][startCol + j] = selectedPiece[i][j]
         }
     }
 }
 
-insertPieceInGrid(gameBoard, selectedPiece)
-
-function updateGameBoard(gameBoard) {
-    const rows = gameBoard.length;
-    const cols = gameBoard[0].length;
-
-    // for (let y = rows - 2; y >= 0; y--) {
-    //     for (let x = 0; x < cols; x++) {
-    //         if (gameBoard[y][x] && !gameBoard[y + 1][x]) {
-    //             gameBoard[y][x] = 0;
-    //             gameBoard[y + 1][x] = 1;
-    //         }
-    //     }
-    // }
-
-    pieceCenter.x++
-}
-
-// updateGameBoard(gameBoard)
-// console.log("Update 1")
-// console.table(gameBoard)
-// updateGameBoard(gameBoard)
-// console.log("Update 2")
-// console.table(gameBoard)
-// updateGameBoard(gameBoard)
-// console.log("Update 3")
-
-
+// insertPieceInGrid(gameBoard, selectedPiece)
 
 function canPieceMoveDown(gameBoard, pieceCenter) {
     const lastHighRow = [-1, -1, -1];
@@ -118,9 +98,27 @@ function canPieceMoveDown(gameBoard, pieceCenter) {
     return canPieceMove;
 }
 
+function resetGameBoardRow(row) {
+    const cols = gameBoard[0].length;
+
+    for(let i=0; i<cols; i++) {
+        gameBoard[row][i] = 0;
+    }
+}
+
+function shouldClearRow(row) {
+    const cols = gameBoard[0].length;
+
+    for(let i=0; i<cols; i++) {
+        if(!gameBoard[row][i]) return false;
+    }
+
+    return true;
+}
+
 
 console.table(gameBoard)
-console.log(canPieceMoveDown(gameBoard, pieceCenter))
-
-// console.log(canPieceMoveDown(gameBoard, pieceCenter))
+resetGameBoardRow(1)
+// console.table(gameBoard)
+console.log(shouldClearRow(2))
 

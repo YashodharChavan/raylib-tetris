@@ -186,12 +186,26 @@ function handlePieceRotation(config) {
     }
 }
 
+function handleRowClearance(gameBoard) {
+    const rows = gameBoard.length;
+    const cols = gameBoard[0].length;
+
+    for(let y=0; y<rows; y++) {
+        for(let x=0; x<cols; x++) {
+            if(u.shouldClearRow(gameBoard, y)) {
+                u.resetGameBoardRow(gameBoard, y);
+            }
+        }
+    }
+}
+
 function update(world) {
     const { gameBoard, config } = world;
 
     updateGameBoard(gameBoard, config);
     handlePieceTranslation(gameBoard, config);
     handlePieceRotation(config);
+    handleRowClearance(gameBoard)
 }
 
 function tearDown() {

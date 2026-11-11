@@ -91,6 +91,43 @@ function rotateRight(bitmap) {
     return rotated;
 }
 
+function copyArray(array) {
+    const copy = [];
+
+    for(let i=0; i<array.length; i++) {
+        const copyRow = [];
+
+        for(let j=0; j<array[0].length; j++) {
+            copyRow.push(array[i][j])
+        }
+        copy.push(copyRow)
+    }
+
+    return copy
+}
+
+function resetGameBoardRow(gameBoard, row) {
+    const cols = gameBoard[0].length;
+    // const resetedGameBoard = copyArray(gameBoard);
+
+    for(let i=0; i<cols; i++) {
+        gameBoard[row][i] = 0;
+    }
+    // return resetGameBoardRow;
+}
+
+function shouldClearRow(gameBoard, row) {
+    const cols = gameBoard[0].length;
+
+    for(let i=0; i<cols; i++) {
+        if(!gameBoard[row][i]) return false;
+    }
+
+    return true;
+}
+
+
+
 module.exports = {
     getWindowWidth,
     getWindowHeight,
@@ -98,4 +135,6 @@ module.exports = {
     initializePieceCenter,
     canPieceMoveDown,
     rotateRight,
+    resetGameBoardRow,
+    shouldClearRow,
 }
