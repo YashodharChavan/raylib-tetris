@@ -165,12 +165,14 @@ function drawPieceOnBoard(config, gameBoard) {
 }
 
 function handlePieceTranslation(gameBoard, config) {
-    const { pieceCenter } = config;
+    const { pieceCenter, currPiece} = config;
     const isLeftKeyDown = r.IsKeyDown(r.KEY_LEFT)
     const isRightKeyDown = r.IsKeyDown(r.KEY_RIGHT)
 
+    const pieceCols = currPiece[0].length;
+
     const isOutOfLeftBounds = (pieceCenter.x <= 1 && isLeftKeyDown)
-    const isOutOfRightBounds = (pieceCenter.x + 2 >= gameBoard[0].length && isRightKeyDown)
+    const isOutOfRightBounds = (pieceCenter.x + pieceCols > gameBoard[0].length && isRightKeyDown)
 
     if (isOutOfLeftBounds || isOutOfRightBounds) return;
 
