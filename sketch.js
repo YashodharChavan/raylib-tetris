@@ -6,7 +6,7 @@ const { selectTetrisPiece } = require("./pieces")
 function setup() {
     const world = {
         screen: {
-            FPS: 30
+            FPS: 10
         },
         grid: {
             rows: 30,
@@ -27,7 +27,6 @@ function setup() {
             currPiece: selectTetrisPiece(),
             nextPiece: selectTetrisPiece(),
             previewCellScale: 1.5,
-            shouldStop: false,
         }
     };
 
@@ -124,10 +123,9 @@ function updateGameBoard(gameBoard, config) {
         config.nextPiece = selectTetrisPiece();
     }
 
-    insertPiece(gameBoard, config)
 }
 
-function insertPiece(gameBoard, config) {
+function insertPieceOnBoard(gameBoard, config) {
     const selectedPiece = config.currPiece;
 
     const startCol = config.pieceCenter.x - 1;
@@ -141,9 +139,23 @@ function insertPiece(gameBoard, config) {
     }
 }
 
+function handlePieceTranslation(gameBoard, config) {
+    const { pieceCenter } = config;
+    const isLeftKeyDown = r.IsKeyDown(r.KEY_LEFT)
+    const isRightKeyDown = r.IsKeyDown(r.KEY_RIGHT)
+
+    console.log(pieceCenter.x, gameBoard[0].length)
+
+    if ((pieceCenter.x <= 1 && isLeftKeyDown) || (pieceCenter.x + 1 >= gameBoard[0].length - 1 && isRightKeyDown)) return;
+
+    if (isLeftKeyDown) pieceCenter.x--;
+    if (isRightKeyDown) pieceCenter.x++;
+}
+
 function update(world) {
-    // console.log(world.config)
     updateGameBoard(world.gameBoard, world.config);
+    insertPieceOnBoard(world.gameBoard, world.config);
+    handlePieceTranslation(world.gameBoard, world.config);
 }
 
 function tearDown() {
