@@ -37,9 +37,11 @@ function getLowestOccupiedCellRows(config) {
     const { currPiece } = config;
     const lowestCellRows = [-1, -1, -1];
 
+    const pieceRows = currPiece.length;
+    const pieceCols = currPiece[0].length;
 
-    for (let col = 0; col < 3; col++) {
-        for (let row = 0; row < 3; row++) {
+    for (let col = 0; col < pieceCols; col++) {
+        for (let row = 0; row < pieceRows; row++) {
             if (currPiece[row][col]) lowestCellRows[col] = row;
         }
     }
@@ -48,9 +50,10 @@ function getLowestOccupiedCellRows(config) {
 }
 
 function canPieceMoveDown(gameBoard, config) {
-    const { pieceCenter } = config;
+    const { pieceCenter, currPiece } = config;
+    const pieceRows = currPiece.length;
 
-    if (pieceCenter.y + 2 >= gameBoard.length) return false;
+    if (pieceCenter.y + pieceRows > gameBoard.length) return false;
 
     const startCol = pieceCenter.x - 1;
     const startRow = pieceCenter.y - 1;
@@ -70,14 +73,19 @@ function canPieceMoveDown(gameBoard, config) {
 
 
 function rotateRight(bitmap) {
-    const rotated = []
+    const rows = bitmap.length;
+    const cols = bitmap[0].length;
 
-    for (let row = 0; row < 3; row++) {
-        const rotatedRow = []
-        for (let col = 0; col < 3; col++) {
-            rotatedRow[col] = bitmap[col][2 - row]
+    const rotated = [];
+
+    for (let row = 0; row < cols; row++) {
+        const rotatedRow = [];
+
+        for (let col = 0; col < rows; col++) {
+            rotatedRow[col] = bitmap[rows - 1 - col][row];
         }
-        rotated.push(rotatedRow)
+
+        rotated.push(rotatedRow);
     }
 
     return rotated;

@@ -78,7 +78,7 @@ function drawNextPieceGrid(grid, config) {
     const startX = 2 * padding + cols * (cellSize + gap);
     const startY = padding;
 
-    for (let y = 0; y < 3; y++) {
+    for (let y = 0; y < 2; y++) {
         for (let x = 0; x < 3; x++) {
             const posX = startX + x * (scaledSize + gap);
             const posY = startY + y * (scaledSize + gap);
@@ -125,8 +125,11 @@ function insertPieceOnBoard(gameBoard, config) {
     const startCol = config.pieceCenter.x - 1;
     const startRow = config.pieceCenter.y - 1;
 
-    for (let y = 0; y < 3; y++) {
-        for (let x = 0; x < 3; x++) {
+    const pieceRows = selectedPiece.length;
+    const pieceCols = selectedPiece[0].length;
+
+    for (let y = 0; y < pieceRows; y++) {
+        for (let x = 0; x < pieceCols; x++) {
             const targetRow = startRow + y;
             const targetCol = startCol + x;
 
@@ -142,8 +145,11 @@ function drawPieceOnBoard(config, gameBoard) {
     const startRow = pieceCenter.y - 1;
     const startCol = pieceCenter.x - 1;
 
-    for (let y = 0; y < 3; y++) {
-        for (let x = 0; x < 3; x++) {
+    const pieceRows = currPiece.length;
+    const pieceCols = currPiece[0].length;
+
+    for (let y = 0; y < pieceRows; y++) {
+        for (let x = 0; x < pieceCols; x++) {
             const posX = padding + (startCol + x) * (cellSize + gap);
             const posY = padding + (startRow + y) * (cellSize + gap);
 
@@ -173,15 +179,17 @@ function handlePieceTranslation(gameBoard, config) {
 }
 
 function handlePieceRotation(config) {
-    if(!r.IsKeyDown(r.KEY_UP)) return;
-
-    config.currPiece = u.rotateRight(config.currPiece);
+    if (r.IsKeyDown(r.KEY_UP)) {   
+        config.currPiece = u.rotateRight(config.currPiece);
+    }
 }
 
 function update(world) {
-    updateGameBoard(world.gameBoard, world.config);
-    handlePieceTranslation(world.gameBoard, world.config);
-    handlePieceRotation(world.config);
+    const { gameBoard, config } = world;
+
+    updateGameBoard(gameBoard, config);
+    handlePieceTranslation(gameBoard, config);
+    handlePieceRotation(config);
 }
 
 function tearDown() {
