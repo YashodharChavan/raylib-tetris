@@ -54,13 +54,17 @@ function isRunning() {
 
 function displayScore(grid, config) {
     const { cols } = grid;
-    const { padding, cellSize, previewCellScale, score } = config;
+    const { padding, cellSize, previewCellScale, score, gap } = config;
+
+    const scaledSize = cellSize * previewCellScale;
+    const availableWidth = 2 * padding + 4 * scaledSize + 3 * gap;
 
     const scoreText = String(score).padStart(4, 0)
     const fontSize = 40;
+    const textWidth = r.MeasureText(scoreText, fontSize);
 
-    const posX = 2 * padding + cols * cellSize + 10;
-    const posY = 2 * padding + 2 * previewCellScale * cellSize;
+    const posX = 2 * padding + cols * cellSize + (availableWidth - textWidth) / 2;
+    const posY = 2 * padding + 2 * scaledSize;
 
     r.DrawText(scoreText, posX, posY, fontSize, r.GREEN);
 }
