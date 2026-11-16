@@ -123,7 +123,7 @@ function drawNextPieceGrid(grid, config) {
         (previewAreaWidth - requiredWidth) / 2;
     const startY = padding;
 
-    for (let y = 0; y < 2; y++) {
+    for (let y = 0; y < nextPiece.length; y++) {
         for (let x = 0; x < nextPiece[0].length; x++) {
             const posX = startX + x * (scaledSize + gap);
             const posY = startY + y * (scaledSize + gap);
@@ -137,7 +137,7 @@ function drawNextPieceGrid(grid, config) {
 
 function draw(world) {
     const { screen, gameBoard, grid, config } = world;
-    
+
     r.BeginDrawing();
     r.ClearBackground(r.BLACK);
 
@@ -224,13 +224,33 @@ function drawPieceOnBoard(config, gameBoard) {
     }
 }
 
+function isColCounted(piece, col) {
+    const cols = piece[0].length;
+
+    for (let i = 0; i < cols; i++) {
+        if (piece[i][col]) return true;
+    }
+
+    return false;
+}
+
+function calcPieceCols(piece) {
+    let pieceCols = 0;
+
+    for(let i=0; i<piece[0].length; i++) {
+        if(isColCounted(piece, i)) pieceCols++;
+    }
+
+    return pieceCols;
+}
+
 function handlePieceTranslation(gameBoard, config) {
     const { pieceCenter, currPiece } = config;
     const isLeftKeyDown = r.IsKeyPressed(r.KEY_LEFT);
     const isRightKeyDown = r.IsKeyPressed(r.KEY_RIGHT);
 
-    const pieceCols = currPiece[0].length;
-
+    const pieceCols = calcPieceCols(currPiece);
+    console.log(pieceCols)
     const isOutOfLeftBounds = pieceCenter.x <= 1 && isLeftKeyDown;
     const isOutOfRightBounds =
         pieceCenter.x + pieceCols > gameBoard[0].length && isRightKeyDown;
@@ -275,15 +295,14 @@ function handleRowClearance(gameBoard) {
 
 function update(world) {
     const { gameBoard, config } = world;
-    if (config.pieceIncrY > 1) config.pieceIncrY = 0;
-
-    config.pieceIncrY += config.speed * r.GetFrameTime();
-    // config.pieceIncrY %= 1;
 
     if (config.isGameOver) return;
+    if (config.pieceIncrY > 1) config.pieceIncrY = 0;
     if (u.checkGameOver(gameBoard)) {
         config.isGameOver = true;
     }
+
+    config.pieceIncrY += config.speed * r.GetFrameTime();
 
     updateGameBoard(gameBoard, config);
     handlePieceTranslation(gameBoard, config);

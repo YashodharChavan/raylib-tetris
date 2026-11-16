@@ -33,7 +33,7 @@ function initializeGameBoard(grid) {
 function initializePieceCenter(grid) {
     return {
         x: Math.floor(grid.cols / 2),
-        y: 1,
+        y: 0,
     };
 }
 
