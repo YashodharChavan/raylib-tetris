@@ -224,33 +224,13 @@ function drawPieceOnBoard(config, gameBoard) {
     }
 }
 
-function isColCounted(piece, col) {
-    const cols = piece[0].length;
-
-    for (let i = 0; i < cols; i++) {
-        if (piece[i][col]) return true;
-    }
-
-    return false;
-}
-
-function calcPieceCols(piece) {
-    let pieceCols = 0;
-
-    for(let i=0; i<piece[0].length; i++) {
-        if(isColCounted(piece, i)) pieceCols++;
-    }
-
-    return pieceCols;
-}
-
 function handlePieceTranslation(gameBoard, config) {
     const { pieceCenter, currPiece } = config;
     const isLeftKeyDown = r.IsKeyPressed(r.KEY_LEFT);
     const isRightKeyDown = r.IsKeyPressed(r.KEY_RIGHT);
 
-    const pieceCols = calcPieceCols(currPiece);
-    console.log(pieceCols)
+    const pieceCols = currPiece[0].length;
+
     const isOutOfLeftBounds = pieceCenter.x <= 1 && isLeftKeyDown;
     const isOutOfRightBounds =
         pieceCenter.x + pieceCols > gameBoard[0].length && isRightKeyDown;
