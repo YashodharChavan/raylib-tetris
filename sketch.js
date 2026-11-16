@@ -226,8 +226,8 @@ function drawPieceOnBoard(config, gameBoard) {
 
 function handlePieceTranslation(gameBoard, config) {
     const { pieceCenter, currPiece } = config;
-    const isLeftKeyDown = r.IsKeyDown(r.KEY_LEFT);
-    const isRightKeyDown = r.IsKeyDown(r.KEY_RIGHT);
+    const isLeftKeyDown = r.IsKeyPressed(r.KEY_LEFT);
+    const isRightKeyDown = r.IsKeyPressed(r.KEY_RIGHT);
 
     const pieceCols = currPiece[0].length;
 
@@ -242,7 +242,7 @@ function handlePieceTranslation(gameBoard, config) {
 }
 
 function handlePieceRotation(gameBoard, config) {
-    if (!r.IsKeyDown(r.KEY_UP)) return;
+    if (!r.IsKeyPressed(r.KEY_UP)) return;
 
     const { currPiece, pieceCenter } = config;
 
@@ -276,8 +276,9 @@ function handleRowClearance(gameBoard) {
 function update(world) {
     const { gameBoard, config } = world;
     if (config.pieceIncrY > 1) config.pieceIncrY = 0;
-    
+
     config.pieceIncrY += config.speed * r.GetFrameTime();
+    // config.pieceIncrY %= 1;
 
     if (config.isGameOver) return;
     if (u.checkGameOver(gameBoard)) {
