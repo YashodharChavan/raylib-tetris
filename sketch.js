@@ -1,12 +1,12 @@
 const r = require("raylib");
-const u = require("./utils")
+const u = require("./utils");
 
-const { selectTetrisPiece } = require("./pieces")
+const { selectTetrisPiece } = require("./pieces");
 
 function setup() {
     const world = {
         screen: {
-            FPS: 10
+            FPS: 60,
         },
         grid: {
             rows: 30,
@@ -24,14 +24,16 @@ function setup() {
                 4: r.ORANGE,
                 5: r.BLUE,
                 6: r.GOLD,
-                7: r.BROWN
+                7: r.BROWN,
             },
             currPiece: selectTetrisPiece(),
             nextPiece: selectTetrisPiece(),
             previewCellScale: 1.5,
             score: 0,
-            isGameOver: false
-        }
+            isGameOver: false,
+            pieceIncrY: 0,
+            speed: 10,
+        },
     };
 
     world.screen.width = u.getWindowWidth(world.config, world.grid);
@@ -39,7 +41,6 @@ function setup() {
 
     world.gameBoard = u.initializeGameBoard(world.grid);
     world.config.pieceCenter = u.initializePieceCenter(world.grid);
-
 
     r.SetTraceLogLevel(r.LOG_NONE);
     r.InitWindow(world.screen.width, world.screen.height, "TETRIS");
@@ -59,11 +60,12 @@ function displayScore(grid, config) {
     const scaledSize = cellSize * previewCellScale;
     const availableWidth = 2 * padding + 4 * scaledSize + 3 * gap;
 
-    const scoreText = String(score).padStart(4, 0)
+    const scoreText = String(score).padStart(4, 0);
     const fontSize = 40;
     const textWidth = r.MeasureText(scoreText, fontSize);
 
-    const posX = 2 * padding + cols * cellSize + (availableWidth - textWidth) / 2;
+    const posX =
+        2 * padding + cols * cellSize + (availableWidth - textWidth) / 2;
     const posY = 2 * padding + 2 * scaledSize;
 
     r.DrawText(scoreText, posX, posY, fontSize, r.GREEN);
@@ -76,11 +78,7 @@ function displayGameOverScreen(screen, config) {
     const { score } = config;
     const fontSize = 75;
 
-    r.DrawRectangle(
-        0, 0,
-        width, height,
-        r.ColorAlpha(r.BLACK, 0.75)
-    );
+    r.DrawRectangle(0, 0, width, height, r.ColorAlpha(r.BLACK, 0.75));
 
     u.drawCenteredText("GAME", width, height / 2 - 100, fontSize, r.MAROON);
     u.drawCenteredText("OVER!!", width, height / 2 - 30, fontSize, r.MAROON);
@@ -109,7 +107,8 @@ function drawGameBoard(gameBoard, config) {
 }
 
 function drawNextPieceGrid(grid, config) {
-    const { nextPiece, padding, palette, previewCellScale, gap, cellSize } = config;
+    const { nextPiece, padding, palette, previewCellScale, gap, cellSize } =
+        config;
     const { cols } = grid;
 
     const scaledSize = previewCellScale * cellSize;
@@ -118,9 +117,10 @@ function drawNextPieceGrid(grid, config) {
     const previewAreaWidth = 4 * scaledSize + 3 * gap;
     const requiredWidth = pieceWidth * scaledSize + (pieceWidth - 1) * gap;
 
-
-    const startX = 2 * padding + cols * (cellSize + gap)
-        + (previewAreaWidth - requiredWidth) / 2;
+    const startX =
+        2 * padding +
+        cols * (cellSize + gap) +
+        (previewAreaWidth - requiredWidth) / 2;
     const startY = padding;
 
     for (let y = 0; y < 2; y++) {
@@ -137,16 +137,17 @@ function drawNextPieceGrid(grid, config) {
 
 function draw(world) {
     const { screen, gameBoard, grid, config } = world;
+    
     r.BeginDrawing();
     r.ClearBackground(r.BLACK);
 
-    drawGameBoard(gameBoard, config)
-    drawNextPieceGrid(grid, config)
+    drawGameBoard(gameBoard, config);
+    drawNextPieceGrid(grid, config);
 
     drawPieceOnBoard(config, gameBoard);
 
     displayScore(grid, config);
-    displayGameOverScreen(screen, config)
+    displayGameOverScreen(screen, config);
 
     r.EndDrawing();
 }
@@ -158,12 +159,11 @@ function updateGameBoard(gameBoard, config) {
     const canPieceMove = u.canPieceMoveDown(gameBoard, config);
 
     if (canPieceMove) {
-        config.pieceCenter.y++;
-    }
-    else {
+        config.pieceCenter.y += Math.floor(config.pieceIncrY);
+    } else {
         config.score++;
-        insertPieceOnBoard(gameBoard, config)
-        config.pieceCenter = u.initializePieceCenter({ rows, cols })
+        insertPieceOnBoard(gameBoard, config);
+        config.pieceCenter = u.initializePieceCenter({ rows, cols });
         config.currPiece = config.nextPiece;
         config.nextPiece = selectTetrisPiece();
     }
@@ -184,17 +184,25 @@ function insertPieceOnBoard(gameBoard, config) {
             const targetCol = startCol + x;
 
             if (!gameBoard[targetRow][targetCol])
-                gameBoard[targetRow][targetCol] = selectedPiece[y][x]
+                gameBoard[targetRow][targetCol] = selectedPiece[y][x];
         }
     }
 }
 
 function drawPieceOnBoard(config, gameBoard) {
-    const { padding, gap, palette, pieceCenter, currPiece, cellSize, isGameOver } = config;
+    const {
+        padding,
+        gap,
+        palette,
+        pieceCenter,
+        currPiece,
+        cellSize,
+        isGameOver,
+    } = config;
 
     if (isGameOver) return;
 
-    const startRow = pieceCenter.y - 1;
+    const startRow = pieceCenter.y;
     const startCol = pieceCenter.x - 1;
 
     const pieceRows = currPiece.length;
@@ -205,11 +213,11 @@ function drawPieceOnBoard(config, gameBoard) {
             const posX = padding + (startCol + x) * (cellSize + gap);
             const posY = padding + (startRow + y) * (cellSize + gap);
 
-            const gameBoardColor = gameBoard[startRow + y][startCol + x]
-            const currPieceColor = currPiece[y][x]
+            const gameBoardColor = gameBoard[startRow + y]?.[startCol + x];
+            const currPieceColor = currPiece[y][x];
 
             const colorIdx = gameBoardColor ? gameBoardColor : currPieceColor;
-            const color = palette[colorIdx]
+            const color = palette[colorIdx];
 
             r.DrawRectangle(posX, posY, cellSize, cellSize, color);
         }
@@ -218,13 +226,14 @@ function drawPieceOnBoard(config, gameBoard) {
 
 function handlePieceTranslation(gameBoard, config) {
     const { pieceCenter, currPiece } = config;
-    const isLeftKeyDown = r.IsKeyDown(r.KEY_LEFT)
-    const isRightKeyDown = r.IsKeyDown(r.KEY_RIGHT)
+    const isLeftKeyDown = r.IsKeyDown(r.KEY_LEFT);
+    const isRightKeyDown = r.IsKeyDown(r.KEY_RIGHT);
 
     const pieceCols = currPiece[0].length;
 
-    const isOutOfLeftBounds = (pieceCenter.x <= 1 && isLeftKeyDown)
-    const isOutOfRightBounds = (pieceCenter.x + pieceCols > gameBoard[0].length && isRightKeyDown)
+    const isOutOfLeftBounds = pieceCenter.x <= 1 && isLeftKeyDown;
+    const isOutOfRightBounds =
+        pieceCenter.x + pieceCols > gameBoard[0].length && isRightKeyDown;
 
     if (isOutOfLeftBounds || isOutOfRightBounds) return;
 
@@ -238,13 +247,12 @@ function handlePieceRotation(gameBoard, config) {
     const { currPiece, pieceCenter } = config;
 
     const cols = gameBoard[0].length;
-    const startCol = pieceCenter.x - 1
+    const startCol = pieceCenter.x - 1;
 
     const rotatedPiece = u.rotateRight(currPiece);
     const rotatedCols = rotatedPiece[0].length;
 
-    const isWithinRightBoundary =
-        startCol + rotatedCols <= cols;
+    const isWithinRightBoundary = startCol + rotatedCols <= cols;
 
     if (!isWithinRightBoundary) return;
 
@@ -267,9 +275,11 @@ function handleRowClearance(gameBoard) {
 
 function update(world) {
     const { gameBoard, config } = world;
+    if (config.pieceIncrY > 1) config.pieceIncrY = 0;
+    
+    config.pieceIncrY += config.speed * r.GetFrameTime();
 
     if (config.isGameOver) return;
-
     if (u.checkGameOver(gameBoard)) {
         config.isGameOver = true;
     }

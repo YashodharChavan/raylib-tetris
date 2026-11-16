@@ -1,10 +1,12 @@
-const r = require("raylib")
+const r = require("raylib");
 
 function getWindowWidth(config, grid) {
     const { padding, gap, previewCellScale, cellSize } = config;
-    const { cols } = grid
+    const { cols } = grid;
 
-    return 3 * padding + cols * (cellSize + gap) + previewCellScale * cellSize * 4;
+    return (
+        3 * padding + cols * (cellSize + gap) + previewCellScale * cellSize * 4
+    );
 }
 
 function getWindowHeight(config, grid) {
@@ -15,10 +17,10 @@ function getWindowHeight(config, grid) {
 }
 
 function initializeGameBoard(grid) {
-    const gameBoard = []
+    const gameBoard = [];
 
     for (let i = 0; i < grid.rows; i++) {
-        const gameBoardRow = []
+        const gameBoardRow = [];
         for (let j = 0; j < grid.cols; j++) {
             gameBoardRow.push(0);
         }
@@ -31,8 +33,8 @@ function initializeGameBoard(grid) {
 function initializePieceCenter(grid) {
     return {
         x: Math.floor(grid.cols / 2),
-        y: 1
-    }
+        y: 1,
+    };
 }
 
 function getLowestOccupiedCellRows(config) {
@@ -66,13 +68,12 @@ function canPieceMoveDown(gameBoard, config) {
         const targetCol = startCol + idx;
 
         if (lowestCellRows[idx] !== -1 && gameBoard[targetRow][targetCol]) {
-            return false
+            return false;
         }
     }
 
     return true;
 }
-
 
 function rotateRight(bitmap) {
     const rows = bitmap.length;
@@ -116,7 +117,7 @@ function moveCellsDown(gameBoard, row) {
 
     for (let y = row; y >= 1; y--) {
         for (let x = 0; x < cols; x++) {
-            gameBoard[y][x] = gameBoard[y - 1][x]
+            gameBoard[y][x] = gameBoard[y - 1][x];
         }
     }
 }
@@ -131,13 +132,12 @@ function drawCenteredText(text, screenWidth, y, fontSize, color) {
 function checkGameOver(gameBoard) {
     const cols = gameBoard[0].length;
 
-    for(let i=0; i<cols; i++) {
-        if(gameBoard[0][i]) return true;
+    for (let i = 0; i < cols; i++) {
+        if (gameBoard[0][i]) return true;
     }
-    
+
     return false;
 }
-
 
 module.exports = {
     getWindowWidth,
@@ -150,5 +150,5 @@ module.exports = {
     shouldClearRow,
     moveCellsDown,
     drawCenteredText,
-    checkGameOver
-}
+    checkGameOver,
+};
