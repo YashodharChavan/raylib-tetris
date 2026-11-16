@@ -6,7 +6,7 @@ const { selectTetrisPiece } = require("./pieces")
 function setup() {
     const world = {
         screen: {
-            FPS: 30
+            FPS: 10
         },
         grid: {
             rows: 30,
