@@ -157,7 +157,6 @@ function updateGameBoard(gameBoard, config) {
     const cols = gameBoard[0].length;
 
     const canPieceMove = u.canPieceMoveDown(gameBoard, config);
-
     if (canPieceMove) {
         config.pieceCenter.y += Math.floor(config.pieceIncrY);
     } else {
@@ -202,7 +201,7 @@ function drawPieceOnBoard(config, gameBoard) {
 
     if (isGameOver) return;
 
-    const startRow = pieceCenter.y;
+    const startRow = pieceCenter.y - 1;
     const startCol = pieceCenter.x - 1;
 
     const pieceRows = currPiece.length;
@@ -266,7 +265,6 @@ function handleRowClearance(gameBoard) {
     for (let y = 0; y < rows; y++) {
         for (let x = 0; x < cols; x++) {
             if (u.shouldClearRow(gameBoard, y)) {
-                u.resetGameBoardRow(gameBoard, y);
                 u.moveCellsDown(gameBoard, y);
             }
         }

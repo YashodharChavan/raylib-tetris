@@ -33,16 +33,17 @@ function initializeGameBoard(grid) {
 function initializePieceCenter(grid) {
     return {
         x: Math.floor(grid.cols / 2),
-        y: 0,
+        y: 1,
     };
 }
 
 function getLowestOccupiedCellRows(config) {
     const { currPiece } = config;
-    const lowestCellRows = [-1, -1, -1];
 
     const pieceRows = currPiece.length;
     const pieceCols = currPiece[0].length;
+
+    const lowestCellRows = Array(pieceCols).fill(-1);
 
     for (let col = 0; col < pieceCols; col++) {
         for (let row = 0; row < pieceRows; row++) {
@@ -63,7 +64,7 @@ function canPieceMoveDown(gameBoard, config) {
     const startRow = pieceCenter.y - 1;
     const lowestCellRows = getLowestOccupiedCellRows(config);
 
-    for (let idx = 0; idx < 3; idx++) {
+    for (let idx = 0; idx < currPiece[0].length; idx++) {
         const targetRow = startRow + lowestCellRows[idx] + 1;
         const targetCol = startCol + idx;
 
@@ -92,14 +93,6 @@ function rotateRight(bitmap) {
     }
 
     return rotated;
-}
-
-function resetGameBoardRow(gameBoard, row) {
-    const cols = gameBoard[0].length;
-
-    for (let i = 0; i < cols; i++) {
-        gameBoard[row][i] = 0;
-    }
 }
 
 function shouldClearRow(gameBoard, row) {
@@ -146,7 +139,6 @@ module.exports = {
     initializePieceCenter,
     canPieceMoveDown,
     rotateRight,
-    resetGameBoardRow,
     shouldClearRow,
     moveCellsDown,
     drawCenteredText,
